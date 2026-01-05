@@ -3,6 +3,7 @@ package main;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import fileio.InputLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,14 @@ public class App {
             you can use the reading from hw1 as a reference.
             however you can use some of the more advanced features of
             jackson library, available here: https://www.baeldung.com/jackson-annotations
+            UsersInput
         */
+        try {
+           InputLoader inputLoader = new InputLoader(INPUT_USERS_FIELD, inputPath);
+        } catch (IOException e) {
+            System.out.println("Error, file's missing");
+        }
+
 
         // TODO 2: process commands.
 
