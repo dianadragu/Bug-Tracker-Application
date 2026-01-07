@@ -1,6 +1,8 @@
 package fileio;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import entities.tickets.TicketLoaderVisitor;
+import entities.tickets.Ticket;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,4 +16,9 @@ public class BugTicketInput extends ReportedTicketParamsInput {
     private String severity;
     private String environment;
     private Integer errorCode;
+
+    @Override
+    public Ticket accept(TicketLoaderVisitor visitor) {
+        return visitor.createTicket(this);
+    }
 }

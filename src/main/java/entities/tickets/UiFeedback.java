@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 public class UiFeedback extends Ticket{
     private String uiElementsId;
     private BusinessValue businessValue;
-    private int usabilityScore;
+    private Integer usabilityScore;
     private String screenshotUrl;
     private String suggestedFix;
 }

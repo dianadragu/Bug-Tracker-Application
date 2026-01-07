@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import entities.tickets.TicketLoaderVisitor;
+import entities.tickets.Ticket;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +23,7 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
-public class ReportedTicketParamsInput {
+public abstract class ReportedTicketParamsInput {
     private Integer id;
     private String type;
     private String title;
@@ -30,4 +32,6 @@ public class ReportedTicketParamsInput {
     private String expertiseArea;
     private String description;
     private String reportedBy;
+
+    public abstract Ticket accept(TicketLoaderVisitor visitor);
 }

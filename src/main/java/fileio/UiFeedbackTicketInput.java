@@ -1,6 +1,8 @@
 package fileio;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import entities.tickets.TicketLoaderVisitor;
+import entities.tickets.Ticket;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,4 +15,9 @@ public class UiFeedbackTicketInput extends ReportedTicketParamsInput{
     private Integer usabilityScore;
     private String screenshotUrl;
     private String suggestedFix;
+
+    @Override
+    public Ticket accept(TicketLoaderVisitor visitor) {
+        return visitor.createTicket(this);
+    }
 }

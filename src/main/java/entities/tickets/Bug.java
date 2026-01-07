@@ -13,5 +13,5 @@ public class Bug extends Ticket{
     private BugFrequency frequency;
     private BugSeverity severity;
     private String environment;
-    private int errorCode;
+    private Integer errorCode;
 }
