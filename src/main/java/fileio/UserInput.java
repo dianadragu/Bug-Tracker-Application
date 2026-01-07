@@ -2,6 +2,8 @@ package fileio;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import entities.users.User;
+import entities.users.UserLoaderVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,8 +20,10 @@ import lombok.Setter;
 })
 @Getter
 @Setter
-public class UserInput {
+public abstract class UserInput {
     private String username;
     private String role;
     private String email;
+
+    public abstract User accept(UserLoaderVisitor visitor);
 }

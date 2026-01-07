@@ -43,16 +43,21 @@ public class App {
             jackson library, available here: https://www.baeldung.com/jackson-annotations
             UsersInput
         */
+        InputLoader inputLoader = null;
+
         try {
-           InputLoader inputLoader = new InputLoader(INPUT_USERS_FIELD, inputPath);
+           inputLoader = new InputLoader(INPUT_USERS_FIELD, inputPath);
         } catch (IOException e) {
             System.out.println("Error, file's missing");
+            return;
         }
 
 
         // TODO 2: process commands.
+        AppRunner appRunner = new AppRunner(inputLoader);
 
         // TODO 3: create objectnodes for output, add them to outputs list.
+        outputs.addAll(appRunner.processCommands());
 
         // DO NOT CHANGE THIS SECTION IN ANY WAY
         try {
