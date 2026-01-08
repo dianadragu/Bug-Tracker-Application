@@ -3,10 +3,10 @@ package utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import entities.tickets.Ticket;
 import entities.tickets.Comment;
+import entities.tickets.Ticket;
 
-public class StandardTicketOutput {
+public class StandardAssignedTicketOutput {
     public static ObjectNode toJson(Ticket ticket) {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objNode = objectMapper.createObjectNode();
@@ -17,13 +17,10 @@ public class StandardTicketOutput {
         objNode.put("businessPriority", ticket.getBusinessPriority().toString());
         objNode.put("status", ticket.getStatus().toString());
         objNode.put("createdAt", ticket.getCreatedAt());
-        objNode.put("solvedAt", convertNullToEmptyString(ticket.getSolvedAt()));
-        objNode.put("assignedAt", convertNullToEmptyString(ticket.getAssignedAt()));
-        objNode.put("assignedTo", convertNullToEmptyString(ticket.getAssignedTo()));
+        objNode.put("assignedAt", ticket.getAssignedAt());
         objNode.put("reportedBy", convertNullToEmptyString(ticket.getReportedBy()));
 
         ArrayNode commArrayNode = objectMapper.createArrayNode();
-
         if(ticket.getComments() != null) {
             for (Comment comment : ticket.getComments()) {
                 ObjectNode commentNode = objectMapper.createObjectNode();

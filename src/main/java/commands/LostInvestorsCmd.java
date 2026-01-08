@@ -15,11 +15,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class LostInvestorsCmd implements Command {
-    private AppDatabase database;
     private CommandInput cmdInput;
 
     public LostInvestorsCmd(final CommandInput cmdInput) {
-        this.database = AppDatabase.getInstance();
         this.cmdInput = cmdInput;
     };
 
@@ -29,7 +27,7 @@ public class LostInvestorsCmd implements Command {
         if (errorHandler.validateCmd(this) != null) {
             return errorHandler.validateCmd(this);
         }
-        database.clearDatabase();
+        AppDatabase.getInstance().clearDatabase();
         return null;
     }
 

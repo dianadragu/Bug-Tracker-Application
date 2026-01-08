@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import database.AppDatabase;
+import entities.milestones.Milestone;
 import entities.tickets.Ticket;
+import entities.tickets.TicketStatus;
+import entities.users.Reporter;
 import entities.users.User;
 import entities.users.UserRole;
 import fileio.CommandInput;
@@ -45,10 +48,19 @@ public class ViewTicketsCmd implements Command {
                tickets.addAll(database.getCreatedTickets());
                break;
            case REPORTER:
-               List<Ticket> reportedTickets = database.getReportedTickets()
-                                                .get((cmdInput.getUsername()));
+               Reporter reporter = (Reporter)  user;
+               List<Ticket> reportedTickets = reporter.getReportedTickets();
                if (reportedTickets != null) {
                    tickets.addAll(reportedTickets);
+               }
+               break;
+           case DEVELOPER:
+               for (Milestone milestone : user.getMilestones()) {
+                   for (Ticket ticket : milestone.getAssignedTickets()) {
+                       if (ticket.getStatus() == TicketStatus.OPEN) {
+                           tickets.add(ticket);
+                       }
+                   }
                }
                break;
            default:

@@ -25,7 +25,6 @@ public class AppDatabase {
     private List<Milestone> createdMilestones;
     private WorkflowPhase workflowPhase;
     private LocalDate startTestingPhase;
-    private Map<String, List<Ticket>> reportedTickets;
 
     private int availableTicketId = 0;
 
@@ -34,7 +33,6 @@ public class AppDatabase {
         this.createdTickets = new ArrayList<>();
         this.createdMilestones = new ArrayList<>();
         this.workflowPhase = WorkflowPhase.TESTING;
-        this.reportedTickets = new HashMap<>();
         this.startTestingPhase = null;
     }
 
@@ -46,7 +44,6 @@ public class AppDatabase {
         users.clear();
         createdTickets.clear();
         createdMilestones.clear();
-        reportedTickets.clear();
         startTestingPhase = null;
         workflowPhase = WorkflowPhase.TESTING;
         availableTicketId = 0;
@@ -59,13 +56,6 @@ public class AppDatabase {
             }
         }
         return null;
-    }
-
-    public void addReportedTickets(String username, Ticket ticket) {
-        if (reportedTickets.get(username) == null) {
-            reportedTickets.put(username, new ArrayList<>());
-        }
-        reportedTickets.get(username).add(ticket);
     }
 
     public void updateWorkflowPhase(LocalDate currentTime) {

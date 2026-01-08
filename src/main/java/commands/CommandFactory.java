@@ -15,6 +15,16 @@ public class CommandFactory {
                 return new CreateMilestoneCmd(commandInput);
             case "viewMilestones":
                 return new ViewMilestonesCmd(commandInput);
+            case "assignTicket":
+                return new AssignTicketCmd(commandInput);
+            case "viewAssignedTickets":
+                return new ViewAssignedTicketsCmd(commandInput);
+            case "undoAssignTicket":
+                return new UndoAssignTicketCmd(commandInput);
+            case "addComment":
+                return new AddCommentCmd(commandInput);
+            case "undoAddComment":
+                return new UndoAddCommentCmd(commandInput);
             default:
                 throw new IllegalArgumentException();
         }

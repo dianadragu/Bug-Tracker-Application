@@ -13,7 +13,7 @@ public class TicketLoaderVisitor {
 
     public Ticket createTicket(BugTicketInput input) {
         Ticket ticket = Bug.builder()
-                .type(input.getType())
+                .type(TicketType.valueOf(input.getType()))
                 .title(input.getTitle())
                 .businessPriority(anonymousTicket(input.getReportedBy(), TicketPriority.valueOf(input.getBusinessPriority())))
                 .status(TicketStatus.OPEN)
@@ -32,7 +32,7 @@ public class TicketLoaderVisitor {
 
     public Ticket createTicket(UiFeedbackTicketInput input) {
         Ticket ticket = UiFeedback.builder()
-                .type(input.getType())
+                .type(TicketType.valueOf(input.getType()))
                 .title(input.getTitle())
                 .businessPriority(anonymousTicket(input.getReportedBy(), TicketPriority.valueOf(input.getBusinessPriority())))
                 .status(TicketStatus.OPEN)
@@ -50,7 +50,7 @@ public class TicketLoaderVisitor {
 
     public Ticket createTicket(FeatureRequestTicketInput input) {
         Ticket ticket = FeatureRequest.builder()
-                .type(input.getType())
+                .type(TicketType.valueOf(input.getType()))
                 .title(input.getTitle())
                 .businessPriority(anonymousTicket(input.getReportedBy(), TicketPriority.valueOf(input.getBusinessPriority())))
                 .status(TicketStatus.OPEN)

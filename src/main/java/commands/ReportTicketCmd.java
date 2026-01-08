@@ -5,6 +5,7 @@ import database.AppDatabase;
 import database.WorkflowPhase;
 import entities.tickets.TicketLoaderVisitor;
 import entities.tickets.Ticket;
+import entities.users.Reporter;
 import entities.users.UserRole;
 import fileio.CommandInput;
 import fileio.ReportedTicketParamsInput;
@@ -55,7 +56,8 @@ public class ReportTicketCmd implements Command {
             database.setAvailableTicketId(++ticketId);
 
             database.getCreatedTickets().add(newTicket);
-            database.addReportedTickets(cmdInput.getUsername(), newTicket);
+            Reporter reporter = (Reporter) database.findUser(cmdInput.getUsername());
+            reporter.getReportedTickets().add(newTicket);
             return null;
         }
     }
