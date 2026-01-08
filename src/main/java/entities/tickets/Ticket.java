@@ -25,4 +25,26 @@ public abstract class Ticket {
     private String assignedAt;
     private String assignedTo;
     private String createdAt;
+
+    public void updatePriority() {
+        switch (businessPriority) {
+            case LOW:
+                businessPriority = TicketPriority.MEDIUM;
+                break;
+            case MEDIUM:
+                businessPriority = TicketPriority.HIGH;
+                break;
+            case HIGH:
+                businessPriority = TicketPriority.CRITICAL;
+                break;
+            case CRITICAL:
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid business priority");
+        }
+    }
+
+    public void changePriorityToCritical() {
+        businessPriority = TicketPriority.CRITICAL;
+    }
 }

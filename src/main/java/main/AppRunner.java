@@ -5,6 +5,7 @@ import commands.Command;
 import commands.CommandFactory;
 import commands.CommandInvoker;
 import database.AppDatabase;
+import entities.tickets.Ticket;
 import entities.users.User;
 import entities.users.UserLoaderVisitor;
 import fileio.CommandInput;
@@ -14,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +23,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class AppRunner {
-    private AppDatabase database = AppDatabase.getInstance();
+    private AppDatabase database;
     private List<CommandInput> commands;
     private List<UserInput> users;
     private CommandInvoker invoker;
@@ -30,6 +32,8 @@ public class AppRunner {
         this.invoker = new CommandInvoker();
         this.commands = inputLoader.getCommands();
         this.users = inputLoader.getUsers();
+        this.database = AppDatabase.getInstance();
+        database.clearDatabase();
         loadUsers();
     }
 
@@ -37,12 +41,18 @@ public class AppRunner {
         List<ObjectNode> outputNodes = new ArrayList<>();
 
         for (CommandInput command : commands) {
+            appAutomaticUpdates(command.getTimestamp());
             try {
                 Command cmd = new CommandFactory().createCommand(command);
                 ObjectNode node = invoker.execute(cmd);
                 if (node != null) {
                     outputNodes.add(node);
                 }
+                System.out.print("Tichete în DB: [ ");
+                for(Ticket ticket: database.getCreatedTickets()) {
+                    System.out.print(ticket.getId() + " ");
+                }
+                System.out.println("]");
             } catch (IllegalArgumentException e) {
                 System.out.println(command.getCommand() + " is invalid!");
             }
@@ -58,5 +68,10 @@ public class AppRunner {
             User user = userInput.accept(visitor);
             database.getUsers().add(user);
         }
+    }
+
+    public void appAutomaticUpdates(String currentTimestamp) {
+        database.updateWorkflowPhase(LocalDate.parse(currentTimestamp));
+        database.updateMilestones(LocalDate.parse(currentTimestamp));
     }
 }

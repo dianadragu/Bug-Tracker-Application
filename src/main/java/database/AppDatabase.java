@@ -89,4 +89,29 @@ public class AppDatabase {
         }
         return null;
     }
+
+
+    public Milestone getMilestoneByName(String milestoneName) {
+        for (Milestone milestone : createdMilestones) {
+            if (milestone.getName().equals(milestoneName)) {
+                return milestone;
+            }
+        }
+        return null;
+    }
+
+    public String assignedToOtherMilestone(int ticketId) {
+        for (Milestone milestone : createdMilestones) {
+            if (milestone.getTickets().contains(ticketId)) {
+                return milestone.getName();
+            }
+        }
+        return null;
+    }
+
+    public void updateMilestones(LocalDate currentDate) {
+        for (Milestone milestone : createdMilestones) {
+            milestone.update(currentDate);
+        }
+    }
 }
