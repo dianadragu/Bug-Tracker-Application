@@ -13,12 +13,12 @@ import utils.CmdCommonOutput;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UndoAssignTicketCmd implements Command {
+public class UndoChangeStatusCmd implements Command {
     private CommandInput cmdInput;
 
-    public UndoAssignTicketCmd(CommandInput cmdInput) {
+    public UndoChangeStatusCmd(final CommandInput cmdInput) {
         this.cmdInput = cmdInput;
-    }
+    };
 
     @Override
     public ObjectNode execute() {
@@ -28,26 +28,21 @@ public class UndoAssignTicketCmd implements Command {
         }
 
         AppDatabase database = AppDatabase.getInstance();
-        int assignedTicketId = cmdInput.getTicketID();
-        Ticket ticket = database.getTicketById(assignedTicketId);
+        Developer dev = (Developer) database.findUser(cmdInput.getUsername());
+        Ticket ticket = database.getTicketById(cmdInput.getTicketID());
 
-        if (ticket.getStatus() != TicketStatus.IN_PROGRESS) {
+        if (!dev.getAssignedTickets().contains(ticket)) {
             ObjectNode objNode = CmdCommonOutput.toJson(cmdInput);
-            objNode.put("error", "Only IN_PROGRESS tickets can be unassigned.");
+            objNode.put("error", "Ticket " + cmdInput.getTicketID() +
+                    " is not assigned to developer " + dev.getUsername() + ".");
             return objNode;
         }
 
-        Developer dev = (Developer) database.findUser(cmdInput.getUsername());
-        dev.getAssignedTickets().remove(ticket);
-        dev.getLostTickets().add(ticket);
-        dev.removeAssignedTicketFromMilestone(assignedTicketId);
-        ticket.setStatus(TicketStatus.OPEN);
-        ticket.setAssignedAt(null);
+        if (ticket.getStatus() == TicketStatus.IN_PROGRESS) {
+            return null;
+        }
 
-
-        TicketHistory deassignHistory = new TicketHistory();
-        ticket.getTicketHistory().add(deassignHistory.saveDeAssignment(cmdInput.getUsername(), cmdInput.getTimestamp()));
-
+        ticket.revertStatus(cmdInput.getTimestamp(), cmdInput.getUsername());
         return null;
     }
 

@@ -5,6 +5,8 @@ import database.AppDatabase;
 import database.WorkflowPhase;
 import entities.tickets.TicketLoaderVisitor;
 import entities.tickets.Ticket;
+import entities.tickets.observers.NotifyMilestone;
+import entities.tickets.observers.SaveStatusModificationInHistory;
 import entities.users.Reporter;
 import entities.users.UserRole;
 import fileio.CommandInput;
@@ -50,6 +52,8 @@ public class ReportTicketCmd implements Command {
             TicketLoaderVisitor visitor = new TicketLoaderVisitor();
             Ticket newTicket = ticketParams.accept(visitor);
             newTicket.setCreatedAt(cmdInput.getTimestamp());
+            newTicket.addObserver(new SaveStatusModificationInHistory());
+            newTicket.addObserver(new NotifyMilestone());
 
             int ticketId = database.getAvailableTicketId();
             newTicket.setId(ticketId);

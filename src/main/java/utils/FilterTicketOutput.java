@@ -3,11 +3,12 @@ package utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import entities.tickets.Comment;
 import entities.tickets.Ticket;
 
-public class StandardAssignedTicketOutput {
-    public static ObjectNode toJson(Ticket ticket) {
+import java.util.List;
+
+public class FilterTicketOutput {
+    public static ObjectNode toJson(Ticket ticket, List<String> words) {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objNode = objectMapper.createObjectNode();
 
@@ -17,21 +18,17 @@ public class StandardAssignedTicketOutput {
         objNode.put("businessPriority", ticket.getBusinessPriority().toString());
         objNode.put("status", ticket.getStatus().toString());
         objNode.put("createdAt", ticket.getCreatedAt());
-        objNode.put("assignedAt", ticket.getAssignedAt());
+        objNode.put("solvedAt", convertNullToEmptyString(ticket.getSolvedAt()));
         objNode.put("reportedBy", convertNullToEmptyString(ticket.getReportedBy()));
 
-        ArrayNode commArrayNode = objectMapper.createArrayNode();
-
-        if(ticket.getComments() != null) {
-            for (Comment comment : ticket.getComments()) {
-                ObjectNode commentNode = objectMapper.createObjectNode();
-                commentNode.put("author", comment.getAuthor());
-                commentNode.put("content", comment.getContent());
-                commentNode.put("createdAt", comment.getCreatedAt());
-                commArrayNode.add(commentNode);
+        if (words != null) {
+            ArrayNode arrayNode = objectMapper.createArrayNode();
+            for (String word : words) {
+                arrayNode.add(word);
             }
+            objNode.set("matchingWords", arrayNode);
         }
-        objNode.set("comments", commArrayNode);
+
         return objNode;
     }
 
@@ -41,4 +38,6 @@ public class StandardAssignedTicketOutput {
         }
         return str;
     }
+
+
 }

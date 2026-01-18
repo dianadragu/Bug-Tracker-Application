@@ -19,6 +19,12 @@ public class Developer extends User{
     private DevSeniority seniority;
     @Builder.Default
     private List<Ticket> assignedTickets = new ArrayList<>();
+    @Builder.Default
+    private List<Ticket> lostTickets = new ArrayList<>();
+    @Builder.Default
+    private List<String> notifications = new ArrayList<>();
+    @Builder.Default
+    private double performanceScore = 0;
 
     public void updateAssignedTicketInMilestone(int ticketId) {
         for (Milestone milestone : getMilestones()) {

@@ -3,6 +3,9 @@ package commands;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import database.AppDatabase;
 import entities.milestones.Milestone;
+import entities.milestones.observers.*;
+import entities.tickets.Ticket;
+import entities.tickets.TicketHistory;
 import entities.users.Developer;
 import entities.users.Manager;
 import entities.users.User;
@@ -61,6 +64,19 @@ public class CreateMilestoneCmd implements Command {
             dev.getMilestones().add(milestone);
         }
 
+        for (Integer ticketId : cmdInput.getTickets()) {
+            Ticket ticket = database.getTicketById(ticketId);
+            TicketHistory ticketHistory = new TicketHistory();
+            ticket.getTicketHistory().add(ticketHistory.saveMilestoneAddition(cmdInput.getUsername(),
+                                                                                cmdInput.getTimestamp(),
+                                                                                cmdInput.getName()));
+        }
+        milestone.addObserver(new MilestoneCompleted());
+        milestone.addObserver(new MilestoneCreated());
+        milestone.addObserver(new MilestoneDueDateIsTomorrow());
+        milestone.addObserver(new MilestonePassedDueDate());
+
+        milestone.sendNotificationForCreatedMilestone(LocalDate.parse(cmdInput.getTimestamp()));
         return null;
     }
 

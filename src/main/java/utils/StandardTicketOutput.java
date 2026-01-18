@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import entities.tickets.Ticket;
 import entities.tickets.Comment;
+import entities.tickets.TicketHistory;
 
 public class StandardTicketOutput {
     public static ObjectNode toJson(Ticket ticket) {

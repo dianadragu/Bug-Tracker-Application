@@ -17,7 +17,7 @@ public class FiltersForSearchCmdInput {
     private String createdAt;
     private String createdBefore;
     private String createdAfter;
-    private boolean availableForAssignment;
+    private Boolean availableForAssignment;
     // devs
     private List<String> keywords;
     private String expertiseArea;

@@ -25,6 +25,16 @@ public class CommandFactory {
                 return new AddCommentCmd(commandInput);
             case "undoAddComment":
                 return new UndoAddCommentCmd(commandInput);
+            case "changeStatus":
+                return new ChangeStatusCmd(commandInput);
+            case "undoChangeStatus":
+                return new UndoChangeStatusCmd(commandInput);
+            case "viewTicketHistory":
+                return new ViewTicketHistoryCmd(commandInput);
+            case "viewNotifications":
+                return new ViewNotificationsCmd(commandInput);
+            case "search":
+                return new SearchCmd(commandInput);
             default:
                 throw new IllegalArgumentException();
         }

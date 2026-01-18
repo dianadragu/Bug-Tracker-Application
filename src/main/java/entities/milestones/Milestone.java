@@ -1,12 +1,15 @@
 package entities.milestones;
 
 import database.AppDatabase;
+import entities.milestones.observers.*;
+import entities.observer.Subject;
 import entities.tickets.Ticket;
 import entities.tickets.TicketStatus;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import utils.DatesManagement;
 
 import java.time.LocalDate;
@@ -17,8 +20,8 @@ import java.util.Map;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class Milestone {
+@SuperBuilder
+public class Milestone extends Subject<MilestoneNotification> {
     private final static int TICKET_PRIORITY_DURATION = 3;
     private String name;
     private List<String> blockingFor;
@@ -30,13 +33,13 @@ public class Milestone {
     private MilestoneStatus status;
     private int daysUntilDue;
     private int overdueBy;
-    private List<Integer> openTickets;
-    private List<Integer> closedTickets;
+    private List<Integer> openTickets = new ArrayList<>();
+    private List<Integer> closedTickets = new ArrayList<>();
     private boolean blocked;
     private Map<String, List<Integer>> repartition;
     private LocalDate updatedAt;
 
-    public Milestone(String name, String dueDate,  List<String> blockingFor, List<Integer> tickets, List<String> assignedDevs) {
+    public Milestone(String name, String dueDate, List<String> blockingFor, List<Integer> tickets, List<String> assignedDevs) {
         this.name = name;
         this.blockingFor = blockingFor;
         this.dueDate = LocalDate.parse(dueDate);
@@ -51,6 +54,20 @@ public class Milestone {
         this.blocked = false;
 
         loadRepartitionMap();
+
+        addObserver(new MilestoneCompleted());
+        addObserver(new MilestoneCreated());
+        addObserver(new MilestoneDueDateIsTomorrow());
+        addObserver(new MilestonePassedDueDate());
+    }
+
+    public void sendNotificationForCreatedMilestone(LocalDate currentTimestamp) {
+        MilestoneNotification notification = new MilestoneNotification();
+        notification.setMilestone(this);
+        notification.setMilestoneName(name);
+        notification.setDueDate(dueDate);
+        notification.setCurrentDate(currentTimestamp);
+        notifyObservers(notification);
     }
 
     public Double calculateCompletionPercentage() {
@@ -88,10 +105,10 @@ public class Milestone {
     }
 
     public void updateOpenTickets() {
+        openTickets.clear();
         AppDatabase database = AppDatabase.getInstance();
-
         for (Integer ticketId : tickets) {
-            if (database.getTicketById(ticketId).getStatus() == TicketStatus.OPEN &&
+            if (database.getTicketById(ticketId).getStatus() != TicketStatus.CLOSED &&
             !openTickets.contains(ticketId)) {
                 openTickets.add(ticketId);
             }
@@ -99,8 +116,8 @@ public class Milestone {
     }
 
     public void updateClosedTickets() {
+        closedTickets.clear();
         AppDatabase database = AppDatabase.getInstance();
-
         for (Integer ticketId : tickets) {
             if(database.getTicketById(ticketId).getStatus() == TicketStatus.CLOSED &&
             !closedTickets.contains(ticketId)) {
@@ -117,11 +134,33 @@ public class Milestone {
         }
     }
 
-    public void unblockMilestones() {
+    public void unblockYourself() {
+        blocked = false;
+        MilestoneNotification notification = new MilestoneNotification();
+        notification.setMilestone(this);
+        notification.setMilestoneName(name);
+        notification.setDueDate(dueDate);
+        notification.setCanBeUnblocked(true);
+        notifyObservers(notification);
+    }
+
+    public void checkUponCompletion(Integer ticketId) {
         AppDatabase database = AppDatabase.getInstance();
-        for (String milestone : blockingFor) {
-            Milestone blockedMilestone = database.getMilestoneByName(milestone);
-            blockedMilestone.setBlocked(false);
+        boolean allTicketsClosed = true;
+        for (Integer id : tickets) {
+            Ticket ticket = database.getTicketById(id);
+            if (ticket.getStatus() != TicketStatus.CLOSED) {
+                allTicketsClosed = false;
+            }
+        }
+
+        if (allTicketsClosed) {
+            status = MilestoneStatus.COMPLETED;
+            MilestoneNotification notification = new MilestoneNotification();
+            notification.setMilestone(this);
+            notification.setMilestoneName(name);
+            notification.setTicketId(ticketId);
+            notifyObservers(notification);
         }
     }
 
@@ -135,8 +174,9 @@ public class Milestone {
         if (status == MilestoneStatus.ACTIVE) {
             updateDates(currentDate);
         }
-        updateDates(currentDate);
+
         updateOpenTickets();
+        updateClosedTickets();
 
         if (!blocked) {
             AppDatabase database = AppDatabase.getInstance();
@@ -152,18 +192,18 @@ public class Milestone {
                 }
             }
 
-            if (DatesManagement.isDueDateTomorrow(dueDate, currentDate)) {
-                for (Integer ticketId : tickets) {
-                    database.getTicketById(ticketId).changePriorityToCritical();
-                }
-            }
-
             if (overdueBy > 0) {
                 for (Integer ticketId : tickets) {
                     database.getTicketById(ticketId).changePriorityToCritical();
                 }
             }
-        }
 
+            MilestoneNotification notification = new MilestoneNotification();
+            notification.setMilestone(this);
+            notification.setMilestoneName(name);
+            notification.setDueDate(dueDate);
+            notification.setCurrentDate(currentDate);
+            notifyObservers(notification);
+        }
     }
 }

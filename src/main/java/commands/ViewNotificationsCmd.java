@@ -1,22 +1,28 @@
 package commands;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import database.AppDatabase;
+import entities.milestones.Milestone;
 import entities.tickets.Ticket;
-import entities.tickets.TicketHistory;
 import entities.tickets.TicketStatus;
 import entities.users.Developer;
+import entities.users.Reporter;
+import entities.users.User;
 import entities.users.UserRole;
 import fileio.CommandInput;
 import utils.CmdCommonOutput;
+import utils.StandardTicketOutput;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class UndoAssignTicketCmd implements Command {
+public class ViewNotificationsCmd implements Command {
     private CommandInput cmdInput;
 
-    public UndoAssignTicketCmd(CommandInput cmdInput) {
+    public ViewNotificationsCmd(CommandInput cmdInput) {
         this.cmdInput = cmdInput;
     }
 
@@ -28,27 +34,19 @@ public class UndoAssignTicketCmd implements Command {
         }
 
         AppDatabase database = AppDatabase.getInstance();
-        int assignedTicketId = cmdInput.getTicketID();
-        Ticket ticket = database.getTicketById(assignedTicketId);
+        Developer dev = (Developer) database.findUser(cmdInput.getUsername());
 
-        if (ticket.getStatus() != TicketStatus.IN_PROGRESS) {
-            ObjectNode objNode = CmdCommonOutput.toJson(cmdInput);
-            objNode.put("error", "Only IN_PROGRESS tickets can be unassigned.");
-            return objNode;
+        ObjectNode objNode = CmdCommonOutput.toJson(cmdInput);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode arrayNode = objectMapper.createArrayNode();
+
+        for (String notification : dev.getNotifications()) {
+            arrayNode.add(notification);
         }
 
-        Developer dev = (Developer) database.findUser(cmdInput.getUsername());
-        dev.getAssignedTickets().remove(ticket);
-        dev.getLostTickets().add(ticket);
-        dev.removeAssignedTicketFromMilestone(assignedTicketId);
-        ticket.setStatus(TicketStatus.OPEN);
-        ticket.setAssignedAt(null);
-
-
-        TicketHistory deassignHistory = new TicketHistory();
-        ticket.getTicketHistory().add(deassignHistory.saveDeAssignment(cmdInput.getUsername(), cmdInput.getTimestamp()));
-
-        return null;
+        dev.getNotifications().clear();
+        objNode.set("notifications", arrayNode);
+        return objNode;
     }
 
     @Override

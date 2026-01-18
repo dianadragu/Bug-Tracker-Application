@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import database.AppDatabase;
 import entities.milestones.Milestone;
 import entities.tickets.Ticket;
+import entities.tickets.TicketHistory;
 import entities.tickets.TicketStatus;
 import entities.users.*;
 import fileio.CommandInput;
@@ -88,7 +89,10 @@ public class AssignTicketCmd implements Command {
 
         dev.updateAssignedTicketInMilestone(assignedTicketId);
         dev.getAssignedTickets().add(ticket);
-        ticket.setStatus(TicketStatus.IN_PROGRESS);
+        TicketHistory assignHistory = new TicketHistory();
+        ticket.getTicketHistory().add(assignHistory.saveAssignment(cmdInput.getUsername(), cmdInput.getTimestamp()));
+
+        ticket.switchStatus(cmdInput.getTimestamp(), cmdInput.getUsername());
         ticket.setAssignedAt(cmdInput.getTimestamp());
         return null;
     }

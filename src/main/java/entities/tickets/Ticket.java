@@ -1,6 +1,7 @@
 package entities.tickets;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import entities.observer.Subject;
+import entities.tickets.observers.TicketNotification;
 import entities.users.DevSeniority;
 import entities.users.ExpertiseArea;
 import lombok.Builder;
@@ -8,13 +9,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
 @SuperBuilder
-public abstract class Ticket {
+public abstract class Ticket extends Subject<TicketNotification> {
     private Integer id;
     private TicketType type;
     private String title;
@@ -29,6 +29,8 @@ public abstract class Ticket {
     private String assignedAt;
     private String assignedTo;
     private String createdAt;
+    @Builder.Default
+    private List<TicketHistory> ticketHistory = new LinkedList<>();
 
     public void updatePriority() {
         switch (businessPriority) {
@@ -108,4 +110,60 @@ public abstract class Ticket {
         }
         return lastComment;
     }
+
+    public void switchStatus(String timestamp, String username) {
+        TicketStatus oldStatus = status;
+        TicketStatus newStatus = null;
+
+        switch (status) {
+            case OPEN:
+                status = TicketStatus.IN_PROGRESS;
+                newStatus = TicketStatus.IN_PROGRESS;
+                break;
+            case IN_PROGRESS:
+                status = TicketStatus.RESOLVED;
+                newStatus = TicketStatus.RESOLVED;
+                break;
+            case RESOLVED:
+                status = TicketStatus.CLOSED;
+                newStatus = TicketStatus.CLOSED;
+                break;
+            case CLOSED:
+                return;
+            default:
+                throw new IllegalArgumentException("Invalid status");
+        }
+
+        TicketNotification ticketNotification = new TicketNotification(this, oldStatus, newStatus, timestamp, username);
+        notifyObservers(ticketNotification);
+
+    }
+
+    public void revertStatus(String timestamp, String username) {
+        TicketStatus oldStatus = status;
+        TicketStatus newStatus = null;
+
+        switch (status) {
+            case RESOLVED:
+                status = TicketStatus.IN_PROGRESS;
+                newStatus = TicketStatus.IN_PROGRESS;
+                break;
+            case CLOSED:
+                status = TicketStatus.RESOLVED;
+                newStatus = TicketStatus.RESOLVED;
+                break;
+            case IN_PROGRESS:
+                status = TicketStatus.OPEN;
+                newStatus = TicketStatus.OPEN;
+                break;
+            case OPEN:
+                return;
+            default:
+                throw new IllegalArgumentException("Invalid status");
+        }
+
+        TicketNotification ticketNotification = new TicketNotification(this, oldStatus, newStatus, timestamp, username);
+        notifyObservers(ticketNotification);
+    }
+
 }
