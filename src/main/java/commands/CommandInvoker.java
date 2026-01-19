@@ -15,8 +15,4 @@ public class CommandInvoker {
     public ObjectNode execute(final Command command) {
         return command.execute();
     }
-
-    public void undo() {
-
-    }
 }
