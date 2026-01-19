@@ -14,6 +14,7 @@ import fileio.UserInput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import reports.AppStability;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,6 +43,12 @@ public class AppRunner {
 
         for (CommandInput command : commands) {
             appAutomaticUpdates(command.getTimestamp());
+
+            if (database.isAppStopped()) {
+                database.clearDatabase();
+                break;
+            }
+
             try {
                 Command cmd = new CommandFactory().createCommand(command);
                 ObjectNode node = invoker.execute(cmd);

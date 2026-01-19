@@ -2,6 +2,6 @@ package entities.tickets;
 
 public enum TicketType {
     BUG,
+    FEATURE_REQUEST,
     UI_FEEDBACK,
-    FEATURE_REQUEST
 }

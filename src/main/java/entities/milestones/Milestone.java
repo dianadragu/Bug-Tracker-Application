@@ -186,7 +186,11 @@ public class Milestone extends Subject<MilestoneNotification> {
                 int nrOfTimesToUpdate = daysPassed / TICKET_PRIORITY_DURATION;
                 while (nrOfTimesToUpdate > 0) {
                     for (Integer ticketId : tickets) {
-                        database.getTicketById(ticketId).updatePriority();
+                        Ticket ticket = database.getTicketById(ticketId);
+                        if (ticket.getStatus() != TicketStatus.CLOSED &&
+                            ticket.getStatus() != TicketStatus.RESOLVED) {
+                            ticket.updatePriority();
+                        }
                     }
                     nrOfTimesToUpdate--;
                 }

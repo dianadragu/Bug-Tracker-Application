@@ -35,6 +35,18 @@ public class CommandFactory {
                 return new ViewNotificationsCmd(commandInput);
             case "search":
                 return new SearchCmd(commandInput);
+            case "generateCustomerImpactReport":
+                return new GenerateCustomerImpactReportCmd(commandInput);
+            case "generateTicketRiskReport":
+                return new GenerateTicketRiskReportCmd(commandInput);
+            case "generateResolutionEfficiencyReport":
+                return new GenerateResolutionEfficiencyReportCmd(commandInput);
+            case "appStabilityReport":
+                return new AppStabilityReportCmd(commandInput);
+            case "generatePerformanceReport":
+                return new GeneratePerformanceReportCmd(commandInput);
+            case "startTestingPhase":
+                return new StartTestingPhaseCmd(commandInput);
             default:
                 throw new IllegalArgumentException();
         }

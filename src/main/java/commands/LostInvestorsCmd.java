@@ -27,7 +27,7 @@ public class LostInvestorsCmd implements Command {
         if (errorHandler.validateCmd(this) != null) {
             return errorHandler.validateCmd(this);
         }
-        AppDatabase.getInstance().clearDatabase();
+        AppDatabase.getInstance().setAppStopped(true);
         return null;
     }
 

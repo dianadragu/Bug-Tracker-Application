@@ -3,6 +3,7 @@ package entities.tickets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import reports.TicketReportVisitor;
 
 @Getter
 @Setter
@@ -13,4 +14,9 @@ public class UiFeedback extends Ticket{
     private Integer usabilityScore;
     private String screenshotUrl;
     private String suggestedFix;
+
+    @Override
+    public double accept(TicketReportVisitor visitor) {
+        return visitor.visit(this);
+    }
 }

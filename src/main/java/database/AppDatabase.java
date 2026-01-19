@@ -3,9 +3,12 @@ package database;
 
 import entities.milestones.Milestone;
 import entities.tickets.Ticket;
+import entities.tickets.TicketStatus;
+import entities.tickets.TicketType;
 import entities.users.User;
 import lombok.Getter;
 import lombok.Setter;
+import reports.AppStability;
 import utils.DatesManagement;
 
 import java.time.LocalDate;
@@ -25,8 +28,8 @@ public class AppDatabase {
     private List<Milestone> createdMilestones;
     private WorkflowPhase workflowPhase;
     private LocalDate startTestingPhase;
-
     private int availableTicketId = 0;
+    private boolean appStopped = false;
 
     private AppDatabase() {
         this.users = new ArrayList<>();
@@ -47,6 +50,7 @@ public class AppDatabase {
         startTestingPhase = null;
         workflowPhase = WorkflowPhase.TESTING;
         availableTicketId = 0;
+        appStopped = false;
     }
 
     public User findUser(String username) {

@@ -25,6 +25,8 @@ public class Developer extends User{
     private List<String> notifications = new ArrayList<>();
     @Builder.Default
     private double performanceScore = 0;
+    @Builder.Default
+    private boolean hasClosedTickets = true;
 
     public void updateAssignedTicketInMilestone(int ticketId) {
         for (Milestone milestone : getMilestones()) {

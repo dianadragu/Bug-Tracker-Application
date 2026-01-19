@@ -8,7 +8,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import reports.TicketReportVisitor;
+import utils.DatesManagement;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Getter
@@ -29,8 +32,13 @@ public abstract class Ticket extends Subject<TicketNotification> {
     private String assignedAt;
     private String assignedTo;
     private String createdAt;
+    private String closedAt;
     @Builder.Default
     private List<TicketHistory> ticketHistory = new LinkedList<>();
+    @Builder.Default
+    private int daysToResolve = 0;
+
+    public abstract double accept(TicketReportVisitor visitor);
 
     public void updatePriority() {
         switch (businessPriority) {
@@ -123,10 +131,14 @@ public abstract class Ticket extends Subject<TicketNotification> {
             case IN_PROGRESS:
                 status = TicketStatus.RESOLVED;
                 newStatus = TicketStatus.RESOLVED;
+                daysToResolve = DatesManagement.getDaysPassed(LocalDate.parse(assignedAt), LocalDate.parse(timestamp));
+                solvedAt = timestamp;
                 break;
             case RESOLVED:
                 status = TicketStatus.CLOSED;
                 newStatus = TicketStatus.CLOSED;
+                daysToResolve = DatesManagement.getDaysPassed(LocalDate.parse(assignedAt), LocalDate.parse(timestamp));
+                closedAt = timestamp;
                 break;
             case CLOSED:
                 return;
@@ -151,6 +163,7 @@ public abstract class Ticket extends Subject<TicketNotification> {
             case CLOSED:
                 status = TicketStatus.RESOLVED;
                 newStatus = TicketStatus.RESOLVED;
+                daysToResolve = DatesManagement.getDaysPassed(LocalDate.parse(assignedAt), LocalDate.parse(timestamp));
                 break;
             case IN_PROGRESS:
                 status = TicketStatus.OPEN;
@@ -165,5 +178,4 @@ public abstract class Ticket extends Subject<TicketNotification> {
         TicketNotification ticketNotification = new TicketNotification(this, oldStatus, newStatus, timestamp, username);
         notifyObservers(ticketNotification);
     }
-
 }
