@@ -1,4 +1,4 @@
-## 📁 Project Structure
+## Project Structure
 
 The project is organized into modular packages to ensure separation of concerns:
 
@@ -30,7 +30,7 @@ The project is organized into modular packages to ensure separation of concerns:
 
 ---
 
-## 🚀 Implementation Stages
+## Implementation Stages
 
 ### 1. Application Skeleton & Database
 The foundation relies on mapping JSON inputs accurately and establishing a single source of truth for data.
@@ -61,3 +61,4 @@ The foundation relies on mapping JSON inputs accurately and establishing a singl
 * **Report Generation**: 
   * **Visitor Pattern**: Used for *Risk*, *Customer Impact*, and *Resolution Efficiency* reports, as they require navigating different ticket types with distinct parameters.
   * **Strategy Pattern**: Used for *Performance* reports, allowing the calculation formula to swap dynamically based on a developer's expertise level.
+
