@@ -61,4 +61,9 @@ The foundation relies on mapping JSON inputs accurately and establishing a singl
 * **Report Generation**: 
   * **Visitor Pattern**: Used for *Risk*, *Customer Impact*, and *Resolution Efficiency* reports, as they require navigating different ticket types with distinct parameters.
   * **Strategy Pattern**: Used for *Performance* reports, allowing the calculation formula to swap dynamically based on a developer's expertise level.
+ 
+## 5. Acknowledgments & Credits
 
+* **Input Data & Reference Tests**: The input test files, reference outputs, and the initial project skeleton were provided by the Object-Oriented Programming (POO) Teaching Team at the National University of Science and Technology Politehnica Bucharest, Faculty of Automatic Control and Computers.
+* **Context**: This project was developed as a homework assignment for the 2nd-year, 1st-semester POO course (November 2025).
+* **Original Skeleton Repository**: oop-pub/schelet-tema2-2025
